@@ -18,9 +18,10 @@ spring:
     change-log: classpath:db/changelog/master.yaml
 
 server:
-  port: 8080
+  port: 8082
 
 logging:
+  include-application-name: false
   level:
     root: INFO
     org.springframework.web: INFO

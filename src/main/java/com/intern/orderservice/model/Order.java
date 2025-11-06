@@ -3,6 +3,7 @@ package com.intern.orderservice.model;
 import com.intern.orderservice.model.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
