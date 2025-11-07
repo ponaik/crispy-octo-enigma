@@ -1,8 +1,7 @@
 package com.intern.orderservice.service.impl;
 
-import com.intern.orderservice.dto.CreateOrderItemRequest;
-import com.intern.orderservice.dto.CreateOrderRequest;
-import com.intern.orderservice.dto.OrderResponse;
+import com.intern.orderservice.dto.*;
+import com.intern.orderservice.exception.ItemsNotFoundException;
 import com.intern.orderservice.mapper.OrderMapper;
 import com.intern.orderservice.model.Item;
 import com.intern.orderservice.model.Order;
@@ -10,6 +9,7 @@ import com.intern.orderservice.model.enums.OrderStatus;
 import com.intern.orderservice.repository.ItemRepository;
 import com.intern.orderservice.repository.OrderRepository;
 import com.intern.orderservice.service.OrderService;
+import com.intern.orderservice.service.UserApiService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,46 +29,53 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
     private final OrderMapper orderMapper;
+    private final UserApiService userApiService;
 
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, ItemRepository itemRepository, OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository, ItemRepository itemRepository, OrderMapper orderMapper, UserApiService userApiService) {
         this.orderRepository = orderRepository;
         this.itemRepository = itemRepository;
         this.orderMapper = orderMapper;
+        this.userApiService = userApiService;
     }
 
 
     @Transactional(readOnly = true)
-    public Optional<OrderResponse> getOrderById(Long id) {
+    @Override
+    public Optional<OrderUserResponse> getOrderById(Long id) {
         return orderRepository.findById(id)
-                .map(orderMapper::toOrderResponse);
+                .map(this::fetchUserThenMap);
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByIds(Collection<Long> ids) {
+    @Override
+    public List<OrderUserResponse> getOrdersByIds(Collection<Long> ids) {
         List<Order> orders = orderRepository.findAllById(ids);
         return orders.stream()
-                .map(orderMapper::toOrderResponse)
+                .map(this::fetchUserThenMap)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByStatus(OrderStatus status) {
+    @Override
+    public List<OrderUserResponse> getOrdersByStatus(OrderStatus status) {
         List<Order> orders = orderRepository.findAllByStatus(status);
         return orders.stream()
-                .map(orderMapper::toOrderResponse)
+                .map(this::fetchUserThenMap)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByStatuses(Collection<OrderStatus> statuses) {
+    @Override
+    public List<OrderUserResponse> getOrdersByStatuses(Collection<OrderStatus> statuses) {
         List<Order> orders = orderRepository.findAllByStatusIn(statuses);
         return orders.stream()
-                .map(orderMapper::toOrderResponse)
+                .map(this::fetchUserThenMap)
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void deleteOrderById(Long id) {
         if (!orderRepository.existsById(id)) {
             throw new EntityNotFoundException("Order with id " + id + " not found");
@@ -79,72 +83,32 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.deleteById(id);
     }
 
-//    /**
-//     * Update an existing order by id using UpdateOrderRequest. Returns updated DTO wrapped in Optional.
-//     * If order not found, or referenced items are missing, returns Optional.empty().
-//     *
-//     * This method replaces order items with those supplied by request.
-//     */
-//    public Optional<OrderResponse> updateOrderById(Long id, UpdateOrderRequest request) {
-//        Optional<Order> maybeOrder = orderRepository.findById(id);
-//        if (maybeOrder.isEmpty()) {
-//            return Optional.empty();
-//        }
-//
-//        // collect item ids referenced by request
-//        Set<Long> itemIds = request.getItems().stream()
-//                .map(ci -> ci.getItemId())
-//                .collect(Collectors.toSet());
-//
-//        List<Item> items = itemRepository.findAllById(itemIds);
-//        if (items.size() != itemIds.size()) {
-//            // some items referenced do not exist
-//            return Optional.empty();
-//        }
-//        Map<Long, Item> itemsById = items.stream()
-//                .collect(Collectors.toMap(Item::getId, i -> i));
-//
-//        Order existing = maybeOrder.get();
-//
-//        // Use mapper to create an Order entity based on Update request.
-//        // Since mapper toOrder ignores id/creationDate/status, we either
-//        // create a new Order via mapper and then copy necessary fields,
-//        // or update in-place. Here we'll create via mapper then copy
-//        // mutable fields (order items) to existing entity.
-//        Order fromRequest = orderMapper.toOrder(request.toCreateRequest(), itemsById);
-//
-//        // Update mutable fields (assumes Order has setOrderItems() and setStatus if provided)
-//        existing.setOrderItems(fromRequest.getOrderItems());
-//        // Only update status if request provides it (example)
-//        if (request.getStatus() != null) {
-//            existing.setStatus(request.getStatus());
-//        }
-//
-//        Order saved = orderRepository.save(existing);
-//        return Optional.of(orderMapper.toOrderResponse(saved));
+    @Override
+    public OrderUserResponse updateOrderStatusById(Long id, UpdateOrderStatusRequest request) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Order with id " + id + " not found"));
 
-//    }
+        order.setStatus(request.status());
+        Order updated = orderRepository.save(order);
+
+        return fetchUserThenMap(updated);
+    }
 
     @Override
-    public OrderResponse createOrder(CreateOrderRequest request) {
+    public OrderUserResponse createOrder(CreateOrderRequest request) {
         log.debug("Creating order: {}", request);
 
-        if (request.items().isEmpty()) {
-            throw new RuntimeException("Order Items are empty");
-        }
+        Set<Long> requestedItemIds = request.items().stream()
+                .map(CreateOrderItemRequest::itemId)
+                .collect(Collectors.toSet());
 
-        List<Long> itemIds = request.items().stream().map(CreateOrderItemRequest::itemId).toList();
-        if (itemIds.isEmpty()) {
-            throw new RuntimeException("Order Items are empty");
-        }
-
-        Map<Long, Item> itemsById = itemRepository.findAllById(itemIds).stream()
+        Map<Long, Item> itemsById = itemRepository.findAllById(requestedItemIds).stream()
                 .collect(Collectors.toMap(Item::getId, Function.identity()));
 
-        // itemsById exception when smaller than itemIds
-//        if (itemIds.isEmpty()) {
-//            throw new RuntimeException("Order Items are empty");
-//        }
+        requestedItemIds.removeAll(itemsById.keySet());
+        if (!requestedItemIds.isEmpty()) {
+            throw new ItemsNotFoundException(requestedItemIds);
+        }
 
         Order order = orderMapper.toOrder(request, itemsById);
         order.setCreationDate(LocalDateTime.now());
@@ -153,7 +117,12 @@ public class OrderServiceImpl implements OrderService {
 
         Order saved = orderRepository.save(order);
 
-        return orderMapper.toOrderResponse(saved);
+        return fetchUserThenMap(saved);
+    }
+
+    private OrderUserResponse fetchUserThenMap(Order order) {
+        UserResponse userById = userApiService.getUserById(order.getUserId());
+        return orderMapper.toOrderUserResponse(order, userById);
     }
 
 }
