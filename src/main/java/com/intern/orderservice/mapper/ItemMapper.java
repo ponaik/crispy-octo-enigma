@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface ItemMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "orderItems", ignore = true)
     Item toItem(CreateItemRequest request);
 
     ItemResponse toItemResponse(Item item);

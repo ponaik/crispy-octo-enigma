@@ -26,5 +26,12 @@ public interface OrderMapper {
     @Mapping(target = "id", source = "order.id")
     @Mapping(target = "user", source = "user")
     OrderUserResponse toOrderUserResponse(Order order, UserResponse user);
+
+    @Mapping(target = "user", source = "userId")
+    OrderUserResponse toOrderUserResponseList(Order order, @Context Map<Long, UserResponse> usersById);
+
+    default UserResponse mapUser(Long id, @Context Map<Long, UserResponse> usersById) {
+        return usersById.get(id);
+    }
 }
 

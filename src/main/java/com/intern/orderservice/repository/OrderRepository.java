@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface OrderRepository extends ListCrudRepository<Order, Long> {
 
-    List<Order> findAllByStatus(OrderStatus status);
-
     List<Order> findAllByStatusIn(Collection<OrderStatus> statuses);
 
 }

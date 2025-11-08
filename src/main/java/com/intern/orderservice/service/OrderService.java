@@ -14,8 +14,6 @@ public interface OrderService {
 
     List<OrderUserResponse> getOrdersByIds(Collection<Long> ids);
 
-    List<OrderUserResponse> getOrdersByStatus(OrderStatus status);
-
     List<OrderUserResponse> getOrdersByStatuses(Collection<OrderStatus> statuses);
 
     void deleteOrderById(Long id);

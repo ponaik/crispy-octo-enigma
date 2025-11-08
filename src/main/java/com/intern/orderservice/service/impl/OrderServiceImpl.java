@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,27 +53,31 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderUserResponse> getOrdersByIds(Collection<Long> ids) {
         List<Order> orders = orderRepository.findAllById(ids);
-        return orders.stream()
-                .map(this::fetchUserThenMap)
-                .collect(Collectors.toList());
+        Map<Long, UserResponse> usersById = fetchUsersMapFromOrders(orders);
+        return mapValidOrderUserResponses(orders, usersById);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public List<OrderUserResponse> getOrdersByStatus(OrderStatus status) {
-        List<Order> orders = orderRepository.findAllByStatus(status);
+    private List<OrderUserResponse> mapValidOrderUserResponses(List<Order> orders, Map<Long, UserResponse> usersById) {
         return orders.stream()
-                .map(this::fetchUserThenMap)
-                .collect(Collectors.toList());
+                .map(o -> orderMapper.toOrderUserResponseList(o, usersById))
+                .filter(o -> o.user() != null)
+                .toList();
+    }
+
+    private Map<Long, UserResponse> fetchUsersMapFromOrders(List<Order> orders) {
+        ConcurrentHashMap<Long, UserResponse> usersById = new ConcurrentHashMap<>();
+        orders.stream()
+                .map(Order::getUserId)
+                .forEach(userId -> usersById.computeIfAbsent(userId, userApiService::getUserById));
+        return usersById;
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<OrderUserResponse> getOrdersByStatuses(Collection<OrderStatus> statuses) {
         List<Order> orders = orderRepository.findAllByStatusIn(statuses);
-        return orders.stream()
-                .map(this::fetchUserThenMap)
-                .collect(Collectors.toList());
+        Map<Long, UserResponse> usersById = fetchUsersMapFromOrders(orders);
+        return mapValidOrderUserResponses(orders, usersById);
     }
 
     @Override
