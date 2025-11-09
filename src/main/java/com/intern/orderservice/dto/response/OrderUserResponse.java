@@ -1,4 +1,4 @@
-package com.intern.orderservice.dto;
+package com.intern.orderservice.dto.response;
 
 import com.intern.orderservice.model.enums.OrderStatus;
 

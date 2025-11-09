@@ -1,7 +1,7 @@
 package com.intern.orderservice.mapper;
 
-import com.intern.orderservice.dto.CreateOrderItemRequest;
-import com.intern.orderservice.dto.OrderItemResponse;
+import com.intern.orderservice.dto.request.CreateOrderItemRequest;
+import com.intern.orderservice.dto.response.OrderItemResponse;
 import com.intern.orderservice.model.Item;
 import com.intern.orderservice.model.OrderItem;
 import org.mapstruct.Context;

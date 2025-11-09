@@ -1,4 +1,4 @@
-package com.intern.orderservice.dto;
+package com.intern.orderservice.dto.request;
 
 import com.intern.orderservice.model.enums.OrderStatus;
 import jakarta.validation.constraints.NotNull;

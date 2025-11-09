@@ -1,4 +1,4 @@
-package com.intern.orderservice.dto;
+package com.intern.orderservice.dto.response;
 
 import java.io.Serializable;
 import java.time.LocalDate;

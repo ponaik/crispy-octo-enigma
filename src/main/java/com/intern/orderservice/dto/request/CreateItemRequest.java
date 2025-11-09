@@ -1,4 +1,4 @@
-package com.intern.orderservice.dto;
+package com.intern.orderservice.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

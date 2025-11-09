@@ -45,3 +45,7 @@ management:
       show-details: always
     circuitbreakers:
       enabled: true
+
+logging:
+  level:
+    web: DEBUG
