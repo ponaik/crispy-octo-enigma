@@ -5,6 +5,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -46,9 +47,9 @@ public class UserApiService {
     public UserResponse getUserByIdFallback(Long userId, RuntimeException t) {
         if (t instanceof HttpClientErrorException http) {
             log.info("Circuit breaker fallback response for userId: {}, {}", userId, http.getStatusCode());
-            if (http.getStatusCode().value() == 404) {
-                // return null so admin can see orders with nonexisting users
-                return null;
+            if (http.getStatusCode() == HttpStatus.NOT_FOUND) {
+                // return placeholder NotFound UserResponse so admin can see orders with nonexisting users
+                return new UserResponse(null, HttpStatus.NOT_FOUND.toString(), null, null, null);
             }
         }
         throw t;

@@ -12,7 +12,6 @@ import com.intern.orderservice.service.AdminOrderService;
 import com.intern.orderservice.service.UserApiService;
 import com.intern.orderservice.service.helper.OrderCreationHelper;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Slf4j
 @Service
 @Transactional
 public class AdminOrderServiceImpl implements AdminOrderService {
@@ -69,6 +67,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     @Override
     public OrderUserResponse createOrder(CreateOrderRequest request) {
         UserResponse userById = userApiService.getUserById(request.userId());
+        if (userById == null || userById.id() == null) {
+            throw new EntityNotFoundException("User with id: " + request.userId() + " not found");
+        }
         return orderCreationHelper.createOrderFromRequestAndUser(request, userById);
     }
 
@@ -108,9 +109,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     private OrderUserResponse fetchUserThenMap(Order order) {
         UserResponse userById = userApiService.getUserById(order.getUserId());
-        if (userById == null) {
-            throw new EntityNotFoundException("User with id " + order.getUserId() + " not found");
-        }
         return orderMapper.toOrderUserResponse(order, userById);
     }
 }

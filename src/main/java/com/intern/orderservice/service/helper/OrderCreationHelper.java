@@ -48,6 +48,7 @@ public class OrderCreationHelper {
         }
 
         Order order = orderMapper.toOrder(request, itemsById);
+        order.setUserId(user.id());
         order.setCreationDate(LocalDateTime.now());
         order.setStatus(OrderStatus.NEW);
         order.getItems().forEach(item -> item.setOrder(order));

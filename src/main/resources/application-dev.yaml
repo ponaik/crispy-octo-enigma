@@ -48,4 +48,5 @@ management:
 
 logging:
   level:
+    security: DEBUG
     web: DEBUG

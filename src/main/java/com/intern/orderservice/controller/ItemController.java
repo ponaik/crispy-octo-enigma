@@ -3,6 +3,7 @@ package com.intern.orderservice.controller;
 import com.intern.orderservice.dto.request.CreateItemRequest;
 import com.intern.orderservice.dto.response.ItemResponse;
 import com.intern.orderservice.service.ItemService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<ItemResponse> create(@RequestBody CreateItemRequest item) {
+    public ResponseEntity<ItemResponse> create(@Valid @RequestBody CreateItemRequest item) {
         return ResponseEntity.ok(itemService.create(item));
     }
 

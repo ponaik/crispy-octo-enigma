@@ -2,7 +2,6 @@ package com.intern.orderservice.controller;
 
 
 import com.intern.orderservice.dto.request.CreateOrderRequest;
-import com.intern.orderservice.dto.request.CreateUserOrderRequest;
 import com.intern.orderservice.dto.request.UpdateOrderStatusRequest;
 import com.intern.orderservice.dto.response.OrderUserResponse;
 import com.intern.orderservice.model.enums.OrderStatus;
@@ -37,18 +36,13 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrdersByIds(ids));
     }
 
-    @GetMapping("/statuses")
+    @GetMapping("/status")
     public ResponseEntity<List<OrderUserResponse>> getOrdersByStatuses(@RequestParam List<OrderStatus> statuses) {
         return ResponseEntity.ok(orderService.getOrdersByStatuses(statuses));
     }
 
-    @PostMapping("/admin")
-    public ResponseEntity<OrderUserResponse> createOrder(@RequestBody @Valid CreateOrderRequest request) {
-        return ResponseEntity.ok(orderService.createOrder(request));
-    }
-
     @PostMapping
-    public ResponseEntity<OrderUserResponse> createUserOrder(@RequestBody @Valid CreateUserOrderRequest request) {
+    public ResponseEntity<OrderUserResponse> createOrder(@RequestBody @Valid CreateOrderRequest request) {
         return ResponseEntity.ok(orderService.createOrder(request));
     }
 

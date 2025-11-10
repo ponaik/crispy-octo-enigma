@@ -18,6 +18,7 @@ public interface OrderMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "userId",  ignore = true)
     Order toOrder(CreateOrderRequest request, @Context Map<Long, Item> itemsById);
 
     @Mapping(target = "id", source = "order.id")

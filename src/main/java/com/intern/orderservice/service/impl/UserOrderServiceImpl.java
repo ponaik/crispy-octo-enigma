@@ -1,7 +1,6 @@
 package com.intern.orderservice.service.impl;
 
 import com.intern.orderservice.dto.request.CreateOrderRequest;
-import com.intern.orderservice.dto.request.CreateUserOrderRequest;
 import com.intern.orderservice.dto.request.UpdateOrderStatusRequest;
 import com.intern.orderservice.dto.response.OrderUserResponse;
 import com.intern.orderservice.dto.response.UserResponse;
@@ -69,7 +68,7 @@ public class UserOrderServiceImpl implements UserOrderService {
     }
 
     @Override
-    public OrderUserResponse createUserOrder(CreateUserOrderRequest request, String email) {
+    public OrderUserResponse createUserOrder(CreateOrderRequest request, String email) {
         UserResponse userByEmail = userApiService.getUserByEmail(email);
         CreateOrderRequest createOrderRequest = new CreateOrderRequest(userByEmail.id(), request.items());
         return orderCreationHelper.createOrderFromRequestAndUser(createOrderRequest, userByEmail);
@@ -83,8 +82,8 @@ public class UserOrderServiceImpl implements UserOrderService {
 
         UserResponse userByEmail = userApiService.getUserByEmail(email);
 
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Order with id " + id + " not found"));
+        Order order = orderRepository.findByIdAndUserId(id, userByEmail.id())
+                .orElseThrow(() -> new EntityNotFoundException("Order with id " + id + " and userId " + userByEmail.id() + " not found"));
 
         order.setStatus(request.status());
         Order updated = orderRepository.save(order);

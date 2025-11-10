@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -64,8 +65,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    @ExceptionHandler({StatusModificationIllegalAccessException.class,
-            CreateOrderIllegalAccessException.class})
+    @ExceptionHandler({
+            StatusModificationIllegalAccessException.class,
+            CreateOrderIllegalAccessException.class,
+            AuthorizationDeniedException.class
+    })
     public ResponseEntity<ErrorResponse> handleIllegalAccessException(
             AccessDeniedException ex,
             HttpServletRequest request) {
