@@ -17,6 +17,9 @@ spring:
 
 userservice:
   baseurl: ${USERSERVICE_BASEURL}
+  endpoint:
+    users: "/users/"
+    search-email: "/users/search?email="
 
 resilience4j:
   circuitbreaker:
