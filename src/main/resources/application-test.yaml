@@ -5,3 +5,24 @@ spring:
 logging:
   level:
     com.intern.orderservice: debug
+
+userservice:
+  baseurl: "http://localhost:9099"
+  endpoint:
+    users: "/users/"
+    search-email: "/users/search?email="
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 100
+        permittedNumberOfCallsInHalfOpenState: 10
+        slowCallDurationThreshold: 4s
+        slowCallRateThreshold: 90
+        failureRateThreshold: 50
+        waitDurationInOpenState: 1s
+        minimumNumberOfCalls: 10
+    instances:
+      UserService:
+        baseConfig: default

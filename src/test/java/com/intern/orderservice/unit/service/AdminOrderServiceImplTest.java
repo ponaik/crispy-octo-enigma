@@ -13,6 +13,7 @@ import com.intern.orderservice.service.UserApiService;
 import com.intern.orderservice.service.helper.OrderCreationHelper;
 import com.intern.orderservice.service.impl.AdminOrderServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
+@Tag("unit")
 class AdminOrderServiceImplTest {
 
     @Mock OrderRepository orderRepository;

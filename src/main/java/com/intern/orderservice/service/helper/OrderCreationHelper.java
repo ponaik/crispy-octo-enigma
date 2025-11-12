@@ -35,6 +35,20 @@ public class OrderCreationHelper {
     }
 
     public OrderUserResponse createOrderFromRequestAndUser(CreateOrderRequest request, UserResponse user) {
+        Map<Long, Item> itemsById = extractItemsById(request);
+
+        Order order = orderMapper.toOrder(request, itemsById);
+        order.setUserId(user.id());
+        order.setCreationDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.NEW);
+        order.getItems().forEach(item -> item.setOrder(order));
+
+        Order saved = orderRepository.save(order);
+
+        return orderMapper.toOrderUserResponse(saved, user);
+    }
+
+    private Map<Long, Item> extractItemsById(CreateOrderRequest request) {
         Set<Long> requestedItemIds = request.items().stream()
                 .map(CreateOrderItemRequest::itemId)
                 .collect(Collectors.toSet());
@@ -46,15 +60,6 @@ public class OrderCreationHelper {
         if (!requestedItemIds.isEmpty()) {
             throw new ItemsNotFoundException(requestedItemIds);
         }
-
-        Order order = orderMapper.toOrder(request, itemsById);
-        order.setUserId(user.id());
-        order.setCreationDate(LocalDateTime.now());
-        order.setStatus(OrderStatus.NEW);
-        order.getItems().forEach(item -> item.setOrder(order));
-
-        Order saved = orderRepository.save(order);
-
-        return orderMapper.toOrderUserResponse(saved, user);
+        return itemsById;
     }
 }
