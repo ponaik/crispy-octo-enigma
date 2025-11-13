@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Profile;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI customOpenAPI(@Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String oauthIssuerUri) {
+    public OpenAPI customOpenAPI(@Value("${swagger-ui.authorization.issuer-uri}") String oauthIssuerUri) {
         return new OpenAPI()
                 .info(new Info()
                         .title("Order Service")

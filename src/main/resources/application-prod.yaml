@@ -1,11 +1,11 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_SCHEMA}
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    url: jdbc:postgresql://localhost:5432/${ORDERSERVICE_DB_SCHEMA}
+    username: ${ORDERSERVICE_DB_USER}
+    password: ${ORDERSERVICE_DB_PASS}
 
   jpa:
-    show-sql: true
+    show-sql: false
 
   security:
     oauth2:
@@ -16,12 +16,6 @@ spring:
 swagger-ui:
   authorization:
     issuer-uri: ${OAUTH_ISSUER_URI}
-
-userservice:
-  baseurl: ${USERSERVICE_BASEURL}
-  endpoint:
-    users: "/users/"
-    search-email: "/users/search?email="
 
 resilience4j:
   circuitbreaker:
@@ -39,7 +33,6 @@ resilience4j:
         baseConfig: default
 
 
-
 management:
   endpoints:
     web:
@@ -52,6 +45,9 @@ management:
       enabled: true
 
 logging:
+  file:
+    name: logs/app.log
   level:
-    security: DEBUG
-    web: DEBUG
+    security: INFO
+    web: INFO
+    org.hibernate.SQL: WARN
