@@ -1,12 +1,13 @@
 package com.intern.orderservice;
 
+import com.intern.orderservice.integration.CustomPostgreSQLContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
-@Import(TestcontainersConfiguration.class)
 @SpringBootTest
-class OrderServiceApplicationTests {
+@ActiveProfiles("test")
+class OrderServiceApplicationTests extends CustomPostgreSQLContainer {
 
 	@Test
 	void contextLoads() {
