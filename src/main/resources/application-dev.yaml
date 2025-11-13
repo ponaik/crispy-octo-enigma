@@ -6,3 +6,50 @@ spring:
 
   jpa:
     show-sql: true
+
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH_ISSUER_URI}
+
+
+userservice:
+  baseurl: ${USERSERVICE_BASEURL}
+  endpoint:
+    users: "/users/"
+    search-email: "/users/search?email="
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 100
+        permittedNumberOfCallsInHalfOpenState: 10
+        slowCallDurationThreshold: 4s
+        slowCallRateThreshold: 90
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        minimumNumberOfCalls: 10
+    instances:
+      UserService:
+        baseConfig: default
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    circuitbreakers:
+      enabled: true
+
+logging:
+  level:
+    security: DEBUG
+    web: DEBUG

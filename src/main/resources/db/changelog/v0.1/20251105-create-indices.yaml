@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251105-index-order_items-order
+      author: ponaik
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            indexName: idx_order_items_order
+            tableName: order_items
+            columns:
+              - column:
+                  name: order_id
+
+  - changeSet:
+      id: 20251105-index-order_items-item
+      author: ponaik
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            indexName: idx_order_items_item
+            tableName: order_items
+            columns:
+              - column:
+                  name: item_id
+
+  - changeSet:
+      id: 20251105-index-orders-user
+      author: ponaik
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            indexName: idx_orders_user
+            tableName: orders
+            columns:
+              - column:
+                  name: user_id
+
+  - changeSet:
+      id: 20251105-index-orders-status
+      author: ponaik
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            indexName: idx_orders_status
+            tableName: orders
+            columns:
+              - column:
+                  name: status

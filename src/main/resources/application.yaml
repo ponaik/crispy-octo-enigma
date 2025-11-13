@@ -18,9 +18,16 @@ spring:
     change-log: classpath:db/changelog/master.yaml
 
 server:
-  port: 8080
+  port: 8082
+
+userservice:
+  baseurl: ${USERSERVICE_BASEURL}
+  endpoint:
+    users: "/users/"
+    search-email: "/users/search?email="
 
 logging:
+  include-application-name: false
   level:
     root: INFO
     org.springframework.web: INFO
