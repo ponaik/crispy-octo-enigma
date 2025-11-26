@@ -5,7 +5,7 @@ import com.intern.orderservice.dto.request.CreateOrderRequest;
 import com.intern.orderservice.dto.request.UpdateOrderStatusRequest;
 import com.intern.orderservice.dto.response.OrderUserResponse;
 import com.intern.orderservice.model.enums.OrderStatus;
-import com.intern.orderservice.service.OrderServiceAuthorizationDecorator;
+import com.intern.orderservice.service.OrderServiceFacade;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +17,10 @@ import java.util.List;
 @RequestMapping("/api/orders")
 public class OrderController {
 
-    private final OrderServiceAuthorizationDecorator orderService;
+    private final OrderServiceFacade orderService;
 
     @Autowired
-    public OrderController(OrderServiceAuthorizationDecorator orderService) {
+    public OrderController(OrderServiceFacade orderService) {
         this.orderService = orderService;
     }
 
@@ -46,7 +46,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createOrder(request));
     }
 
-    @PutMapping("/{id}/status")
+    @PatchMapping("/{id}")
     public ResponseEntity<OrderUserResponse> updateOrderStatusById(
             @PathVariable Long id,
             @RequestBody @Valid UpdateOrderStatusRequest request) {
