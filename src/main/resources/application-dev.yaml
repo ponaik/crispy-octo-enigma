@@ -56,5 +56,4 @@ logging:
     security: DEBUG
     web: DEBUG
     com.intern.orderservice: DEBUG
-    org.springframework.kafka.listener: DEBUG
-    org.springframework.kafka.support.serializer: DEBUG
+    org.springframework.kafka.listener.DeadLetterPublishingRecoverer: DEBUG
