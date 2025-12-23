@@ -13,15 +13,9 @@ spring:
         jwt:
           issuer-uri: ${OAUTH_ISSUER_URI}
 
-swagger-ui:
-  authorization:
+openapi:
+  oauth:
     issuer-uri: ${OAUTH_ISSUER_URI}
-
-userservice:
-  baseurl: ${USERSERVICE_BASEURL}
-  endpoint:
-    users: "/users/"
-    search-email: "/users/search?email="
 
 resilience4j:
   circuitbreaker:

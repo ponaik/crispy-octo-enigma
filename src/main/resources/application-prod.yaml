@@ -13,8 +13,8 @@ spring:
         jwt:
           issuer-uri: ${OAUTH_ISSUER_URI}
 
-swagger-ui:
-  authorization:
+openapi:
+  oauth:
     issuer-uri: ${OAUTH_ISSUER_URI}
 
 resilience4j:
