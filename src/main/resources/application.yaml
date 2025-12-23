@@ -40,8 +40,8 @@ server:
 userservice:
   baseurl: ${USERSERVICE_BASEURL}
   endpoint:
-    users: "/users/"
-    search-email: "/users/search?email="
+    users: "/api/users/"
+    search-email: "/api/users/search?email="
 
 logging:
   include-application-name: false
