@@ -23,7 +23,7 @@ public class OpenApiConfig {
                 .addServersItem(new Server().url("/").description("Default Gateway Server"))
                 .info(new Info()
                         .title("Order Service")
-                        .version("0.0.1-SNAPSHOT"))
+                        .version("1.1.2"))
                 .addSecurityItem(new SecurityRequirement().addList("OAuth2Scheme"))
                 .components(new Components()
                         .addSecuritySchemes("OAuth2Scheme",

@@ -12,7 +12,7 @@
 
 	<groupId>com.intern</groupId>
 	<artifactId>orderservice</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.1.2</version>
 	<name>OrderService</name>
 	<description>Order Microservice</description>
 
