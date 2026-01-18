@@ -1,0 +1,110 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  userservice:
+    image: userservice-userservice:latest
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${USERSERVICE_DB_SCHEMA}
+      SPRING_DATASOURCE_USERNAME: ${USERSERVICE_DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${USERSERVICE_DB_PASS}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: ${USERSERVICE_REDIS_PORT}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${OAUTH_ISSUER_URI}
+    expose:
+      - 8080
+    ports:
+      - "8000:8080"
+    depends_on:
+      postgres:
+         condition: service_healthy
+      redis:
+        condition: service_started
+      auth-service:
+        condition: service_started
+
+  postgres:
+     image: postgres:18-alpine
+     restart: always
+     user: postgres
+     volumes:
+       - user-db-data:/var/lib/postgresql/data
+     environment:
+       - POSTGRES_DB=${USERSERVICE_DB_SCHEMA}
+       - POSTGRES_USER=${USERSERVICE_DB_USER}
+       - POSTGRES_PASSWORD=${USERSERVICE_DB_PASS}
+     expose:
+       - 5432
+     healthcheck:
+       test: ["CMD", "pg_isready", "-U", "${USERSERVICE_DB_USER}", "-d", "${USERSERVICE_DB_SCHEMA}"]
+       interval: 10s
+       timeout: 5s
+       retries: 5
+
+  redis:
+    image: redis:8.2.2-alpine
+    expose:
+      - ${USERSERVICE_REDIS_PORT}
+    volumes:
+      - redis-data:/data
+
+  auth-service:
+    image: ponaik/auth-service:latest
+    expose:
+      - ${OAUTH_PORT}
+    ports:
+      - 8001:${OAUTH_PORT}
+
+  orderservice:
+#    build:
+#      context: .
+    image: ponaik/orderservice:latest
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://orderservice-postgres:5432/${ORDERSERVICE_DB_SCHEMA}
+      SPRING_DATASOURCE_USERNAME: ${ORDERSERVICE_DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${ORDERSERVICE_DB_PASS}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${OAUTH_ISSUER_URI}
+      USERSERVICE_BASEURL: ${USERSERVICE_BASEURL}
+      SWAGGER-UI_AUTHORIZATION_ISSUER-URI: http://localhost:8001/realms/UserService
+    expose:
+      - 8082
+    ports:
+      - "8280:8082"
+    depends_on:
+      orderservice-postgres:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+
+
+  orderservice-postgres:
+    image: postgres:18-alpine
+    restart: always
+    user: postgres
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${ORDERSERVICE_DB_SCHEMA}
+      - POSTGRES_USER=${ORDERSERVICE_DB_USER}
+      - POSTGRES_PASSWORD=${ORDERSERVICE_DB_PASS}
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${ORDERSERVICE_DB_USER}", "-d", "${ORDERSERVICE_DB_SCHEMA}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  order-db-data:
+  user-db-data:
+  redis-data:

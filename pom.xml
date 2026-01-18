@@ -12,7 +12,7 @@
 
 	<groupId>com.intern</groupId>
 	<artifactId>orderservice</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.1.2</version>
 	<name>OrderService</name>
 	<description>Order Microservice</description>
 
@@ -121,6 +121,20 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>kafka</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

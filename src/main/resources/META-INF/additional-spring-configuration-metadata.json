@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "spring.kafka.dead-letter-topic",
+      "type": "java.lang.String",
+      "description": "Description for spring.kafka.dead-letter-topic."
+    },
+    {
+      "name": "openapi.oauth.issuer-uri",
+      "type": "java.lang.String",
+      "description": "Description for openapi.oauth.issuer-uri."
+    }
+  ] }
