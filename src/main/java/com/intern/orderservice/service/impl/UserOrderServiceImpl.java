@@ -13,6 +13,7 @@ import com.intern.orderservice.service.UserApiService;
 import com.intern.orderservice.service.UserOrderService;
 import com.intern.orderservice.service.helper.OrderCreationHelper;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional
 public class UserOrderServiceImpl implements UserOrderService {
@@ -88,6 +90,7 @@ public class UserOrderServiceImpl implements UserOrderService {
         order.setStatus(request.status());
         Order updated = orderRepository.save(order);
 
+        log.debug("Order updated by user: {}", updated);
         return orderMapper.toOrderUserResponse(updated, userByEmail);
     }
 
@@ -98,6 +101,7 @@ public class UserOrderServiceImpl implements UserOrderService {
             throw new EntityNotFoundException("Order with id " + id + " and userId " + userByEmail.id() + " not found");
         }
         orderRepository.deleteById(id);
+        log.debug("Order deleted by user: {}", id);
     }
 
 }

@@ -50,5 +50,6 @@ public class KafkaOrderServiceImpl implements BrokerOrderService {
         }
 
         orderRepository.save(order);
+        log.debug("Order with id {} status updated by Kafka: {}", order.getId(), order.getStatus());
     }
 }

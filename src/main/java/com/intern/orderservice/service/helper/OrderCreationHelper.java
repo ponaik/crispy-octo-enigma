@@ -11,6 +11,7 @@ import com.intern.orderservice.model.Order;
 import com.intern.orderservice.model.enums.OrderStatus;
 import com.intern.orderservice.repository.ItemRepository;
 import com.intern.orderservice.repository.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class OrderCreationHelper {
 
@@ -45,6 +47,7 @@ public class OrderCreationHelper {
 
         Order saved = orderRepository.save(order);
 
+        log.debug("Order created: {}", saved);
         return orderMapper.toOrderUserResponse(saved, user);
     }
 

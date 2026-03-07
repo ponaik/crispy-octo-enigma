@@ -12,6 +12,7 @@ import com.intern.orderservice.service.AdminOrderService;
 import com.intern.orderservice.service.UserApiService;
 import com.intern.orderservice.service.helper.OrderCreationHelper;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 @Transactional
 public class AdminOrderServiceImpl implements AdminOrderService {
@@ -81,6 +83,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         order.setStatus(request.status());
         Order updated = orderRepository.save(order);
 
+        log.debug("Order updated by admin: {}", updated);
         return fetchUserThenMap(updated);
     }
 
@@ -90,6 +93,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             throw new EntityNotFoundException("Order with id " + id + " not found");
         }
         orderRepository.deleteById(id);
+        log.debug("Order deleted by admin: {}", id);
     }
 
     private List<OrderUserResponse> mapValidOrderUserResponses(List<Order> orders, Map<Long, UserResponse> usersById) {
