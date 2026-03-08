@@ -12,7 +12,7 @@
 
 	<groupId>com.intern</groupId>
 	<artifactId>orderservice</artifactId>
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 	<name>OrderService</name>
 	<description>Order Microservice</description>
 
@@ -97,10 +97,6 @@
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-otlp</artifactId>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>io.micrometer</groupId>-->
-        <!--            <artifactId>micrometer-registry-prometheus</artifactId>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-logback-appender-1.0</artifactId>
